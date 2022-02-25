@@ -148,7 +148,7 @@ def getPitcherData(connection, totalGame, mode):
         else:
             docs[index]['WHIP'] = (docs[index]['被安打'] + docs[index]['四死球']) / docs[index]['投球回']
         if (mode == 2):
-            docs[index]['試合数'] = totalGame
+            docs[index]['登板数'] = totalGame
 
     #投手成績一覧表示
     df = pd.DataFrame(docs)
