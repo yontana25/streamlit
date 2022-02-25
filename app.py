@@ -158,7 +158,7 @@ def createList():
 
     ##セレクトボックス作成##
     tempList = ['通算野手成績', '最近の野手成績', '通算投手成績', '最近の投手成績']
-    selectedList = st.sidebar.selectbox(
+    selectedList = st.selectbox(
         '選択：',
         tempList
     )
