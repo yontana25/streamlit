@@ -93,7 +93,7 @@ def getPitcherData(connection, totalGame, mode):
         st.header('通算投手成績')
         #投手成績集計
         docs = db.t_pitcher_data.aggregate([
-            { "$group": { "_id": "$player_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$shutouts" }, "完封": { "$sum": "$complete_games" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
+            { "$group": { "_id": "$player_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$complete_games" }, "完封": { "$sum": "$shutouts" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
             , { "$sort": { "_id": 1,  } }
         ])
         docs = list(docs)
@@ -106,7 +106,7 @@ def getPitcherData(connection, totalGame, mode):
         #投手成績集計
         docs = db.t_pitcher_data.aggregate([
             {"$match": {"game_id": {"$gt":n}}},
-            { "$group": { "_id": "$player_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$shutouts" }, "完封": { "$sum": "$complete_games" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
+            { "$group": { "_id": "$player_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$complete_games" }, "完封": { "$sum": "$shutouts" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
             , { "$sort": { "_id": 1,  } }
         ])
         docs = list(docs)
@@ -114,7 +114,7 @@ def getPitcherData(connection, totalGame, mode):
         st.header('チーム投手成績')
         #投手成績集計
         docs = db.t_pitcher_data.aggregate([
-            { "$group": { "_id": "$team_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$shutouts" }, "完封": { "$sum": "$complete_games" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
+            { "$group": { "_id": "$team_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$complete_games" }, "完封": { "$sum": "$shutouts" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
             , { "$sort": { "_id": 1,  } }
         ])
         docs = list(docs)
