@@ -51,7 +51,7 @@ def getFielderData(connection, totalGame, mode):
 
     for index in range(len(docs)):
         #打席 打数+四死球+犠打
-        docs[index]['打席'] = docs[index]['打数'] + docs[index]['安打'] + docs[index]['犠打']
+        docs[index]['打席'] = docs[index]['打数'] + docs[index]['四死球'] + docs[index]['犠打']
         #打率 安打/打数
         if docs[index]['打数'] == 0:
             docs[index]['打率'] = 0
