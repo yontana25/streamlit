@@ -16,36 +16,41 @@ def getFielderData(connection, totalGame, mode):
 
     db = connection
     kiteiDaseki = totalGame * 3.1
-    n = 0
+    recentGames = 0
 
     if (mode == 0):
         st.header('通算野手成績')
-        #野手成績集計
+    elif (mode == 1):
+        st.header('最近の野手個人成績')
+    elif (mode == 2):
+        st.header('チーム野手成績')
+    else:
+        st.header('野手ランキング')
+
+    if (mode == 0 or mode == 3):
+        # 通算野手成績 / 野手ランキング
         docs = db.t_fielder_data.aggregate([
-            {"$match": {"game_id": {"$gt":n}}},
             { "$group": { "_id": "$player_name", "試合数": { "$sum": "$games" }, "打数": { "$sum": "$at_bat" }, "得点": { "$sum": "$run" }, "安打": { "$sum": "$single" }, "二塁打": { "$sum": "$double" }, "三塁打": { "$sum": "$triple" }, "本塁打": { "$sum": "$home_run" }, "打点": { "$sum": "$rbi" }, "三振": { "$sum": "$strikeout" }, "四死球": { "$sum": "$walk" }, "犠打": { "$sum": "$sacrifice" }, "盗塁": { "$sum": "$steal" }, "併殺": { "$sum": "$gdp" }, "失策": { "$sum": "$errors" } } }
-            , { "$sort": { "_id": 1,  } }
+            , { "$sort": { "安打": -1,  } }
         ])
         docs = list(docs)
     elif (mode == 1):
-        st.header('最近の野手個人成績')
-        n = st.number_input(label='試合数',
+        # 最近の野手個人成績
+        recentGames = st.number_input(label='試合数',
                             value=10,
                             )
-        n = totalGame - n
-        #野手成績集計
+        recentGames = totalGame - recentGames
         docs = db.t_fielder_data.aggregate([
-            {"$match": {"game_id": {"$gt":n}}},
+            {"$match": {"game_id": {"$gt":recentGames}}},
             { "$group": { "_id": "$player_name", "試合数": { "$sum": "$games" }, "打数": { "$sum": "$at_bat" }, "得点": { "$sum": "$run" }, "安打": { "$sum": "$single" }, "二塁打": { "$sum": "$double" }, "三塁打": { "$sum": "$triple" }, "本塁打": { "$sum": "$home_run" }, "打点": { "$sum": "$rbi" }, "三振": { "$sum": "$strikeout" }, "四死球": { "$sum": "$walk" }, "犠打": { "$sum": "$sacrifice" }, "盗塁": { "$sum": "$steal" }, "併殺": { "$sum": "$gdp" }, "失策": { "$sum": "$errors" } } }
-            , { "$sort": { "_id": 1,  } }
+            , { "$sort": { "安打": -1,  } }
         ])
         docs = list(docs)
-    else:
-        st.header('チーム野手成績')
-        #野手成績集計
+    elif (mode == 2):
+        # チーム野手成績
         docs = db.t_fielder_data.aggregate([
             { "$group": { "_id": "$team_name", "試合数": { "$sum": "$games" }, "打数": { "$sum": "$at_bat" }, "得点": { "$sum": "$run" }, "安打": { "$sum": "$single" }, "二塁打": { "$sum": "$double" }, "三塁打": { "$sum": "$triple" }, "本塁打": { "$sum": "$home_run" }, "打点": { "$sum": "$rbi" }, "三振": { "$sum": "$strikeout" }, "四死球": { "$sum": "$walk" }, "犠打": { "$sum": "$sacrifice" }, "盗塁": { "$sum": "$steal" }, "併殺": { "$sum": "$gdp" }, "失策": { "$sum": "$errors" } } }
-            , { "$sort": { "_id": 1,  } }
+            , { "$sort": { "安打": -1,  } }
         ])
         docs = list(docs)
 
@@ -74,48 +79,65 @@ def getFielderData(connection, totalGame, mode):
 
     #野手成績一覧表示
     df = pd.DataFrame(docs)
+    df = df.rename(columns={
+        '_id':'選手名'
+    })
     df = df.round({'打率': 3, '出塁率': 3, '長打率': 3, 'OPS': 3})
     if (mode == 0):
         if st.checkbox('規定打席以上'):
             st.dataframe(df[df['打席']>=kiteiDaseki], None, 1000)
         else:
             st.dataframe(df, None, 1000)
-    else:
+    elif (mode == 1 or mode == 2):
         st.dataframe(df, None, 1000)
+    elif (mode == 3):
+        st.dataframe(df.sort_values(by='安打', ascending=False).head(3).loc[:,['選手名','安打']])
+        st.dataframe(df.sort_values(by='本塁打', ascending=False).head(3).loc[:,['選手名','本塁打']])
+        st.dataframe(df.sort_values(by='打点', ascending=False).head(3).loc[:,['選手名','打点']])
+        st.dataframe(df.sort_values(by='盗塁', ascending=False).head(3).loc[:,['選手名','盗塁']])
+        df = df[df['打席']>=kiteiDaseki]
+        st.dataframe(df.sort_values(by='打率', ascending=False).head(3).loc[:,['選手名','打率']])
+        st.dataframe(df.sort_values(by='出塁率', ascending=False).head(3).loc[:,['選手名','出塁率']])
 
 def getPitcherData(connection, totalGame, mode):
 
     db = connection
     kiteiTokyu = totalGame
-    n = 0
+    recentGames = 0
 
     if (mode == 0):
         st.header('通算投手成績')
-        #投手成績集計
+    elif (mode == 1):
+        st.header('最近の投手個人成績')
+    elif (mode == 2):
+        st.header('チーム投手成績')
+    elif (mode == 3):
+        st.header('投手ランキング')
+
+    if (mode == 0 or mode == 3):
+        # 通算投手成績 / 投手ランキング
         docs = db.t_pitcher_data.aggregate([
             { "$group": { "_id": "$player_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$complete_games" }, "完封": { "$sum": "$shutouts" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
-            , { "$sort": { "_id": 1,  } }
+            , { "$sort": { "投球回": -1,  } }
         ])
         docs = list(docs)
-    elif (mode ==1):
-        st.header('最近の投手個人成績')
-        n = st.number_input(label='試合数',
+    elif (mode == 1):
+        recentGames = st.number_input(label='試合数',
                             value=10,
                             )
-        n = kiteiTokyu - n
-        #投手成績集計
+        recentGames = kiteiTokyu - recentGames
+        # 最近の投手個人成績
         docs = db.t_pitcher_data.aggregate([
-            {"$match": {"game_id": {"$gt":n}}},
+            {"$match": {"game_id": {"$gt":recentGames}}},
             { "$group": { "_id": "$player_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$complete_games" }, "完封": { "$sum": "$shutouts" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
-            , { "$sort": { "_id": 1,  } }
+            , { "$sort": { "投球回": -1,  } }
         ])
         docs = list(docs)
-    else:
-        st.header('チーム投手成績')
-        #投手成績集計
+    elif (mode == 2):
+        # チーム投手成績
         docs = db.t_pitcher_data.aggregate([
             { "$group": { "_id": "$team_name", "登板数": { "$sum": "$games" }, "先発登板": { "$sum": "$games_started" }, "勝": { "$sum": "$wins" }, "負": { "$sum": "$losses" }, "救援勝利": { "$sum": "$relief_wins" }, "ホールド": { "$sum": "$hold" }, "セーブ": { "$sum": "$save" }, "投球回": { "$sum": "$number_of_piches" }, "被安打": { "$sum": "$hits" }, "奪三振": { "$sum": "$strikeouts" }, "四死球": { "$sum": "$walk" }, "失点": { "$sum": "$runs" }, "自責点": { "$sum": "$earned_runs" }, "暴投": { "$sum": "$wild_pitches" }, "被本塁": { "$sum": "$home_run" }, "完投": { "$sum": "$complete_games" }, "完封": { "$sum": "$shutouts" }, "QS": { "$sum": "$qs" }, "HQS": { "$sum": "$hqs" } } }
-            , { "$sort": { "_id": 1,  } }
+            , { "$sort": { "投球回": -1,  } }
         ])
         docs = list(docs)
 
@@ -152,14 +174,25 @@ def getPitcherData(connection, totalGame, mode):
 
     #投手成績一覧表示
     df = pd.DataFrame(docs)
+    df = df.rename(columns={
+        '_id':'選手名'
+    })
     df = df.round({'投球回': 1})
     if (mode == 0):
         if st.checkbox('規定投球回以上'):
             st.dataframe(df[df['投球回']>=kiteiTokyu], None, 1000)
         else:
             st.dataframe(df, None, 1000)
-    else:
+    elif (mode == 1 or mode == 2):
         st.dataframe(df, None, 1000)
+    elif (mode == 3):
+        dfKitei = df[df['投球回']>=kiteiTokyu]
+        st.dataframe(dfKitei.sort_values(by='防御率', ascending=True).head(3).loc[:,['選手名','防御率']])
+        st.dataframe(dfKitei.sort_values(by='勝率', ascending=False).head(3).loc[:,['選手名','勝率']])
+        st.dataframe(df.sort_values(by='勝', ascending=False).head(3).loc[:,['選手名','勝']])
+        st.dataframe(df.sort_values(by='奪三振', ascending=False).head(3).loc[:,['選手名','奪三振']])
+        st.dataframe(df.sort_values(by='セーブ', ascending=False).head(3).loc[:,['選手名','セーブ']])
+        st.dataframe(df.sort_values(by='HP', ascending=False).head(3).loc[:,['選手名','HP']])
 
 def createList():
 
@@ -177,7 +210,7 @@ def createList():
     totalGame = docs[0]['game_id']
 
     ##セレクトボックス作成##
-    tempList = ['通算野手成績', '最近の野手成績', '通算投手成績', '最近の投手成績', 'チーム成績']
+    tempList = ['通算野手成績', '最近の野手成績', '通算投手成績', '最近の投手成績', 'チーム成績', '野手ランキング', '投手ランキング']
     selectedList = st.selectbox(
         '選択：',
         tempList
@@ -191,9 +224,13 @@ def createList():
         getPitcherData(db, totalGame, 0)
     elif (selectedList == '最近の投手成績'):
         getPitcherData(db, totalGame, 1)
-    else:
+    elif (selectedList == 'チーム成績'):
         getFielderData(db, totalGame, 2)
         getPitcherData(db, totalGame, 2)
+    elif (selectedList == '野手ランキング'):
+        getFielderData(db, totalGame, 3)
+    elif (selectedList == '投手ランキング'):
+        getPitcherData(db, totalGame, 3)
         
     client.close()
 
